@@ -5,6 +5,13 @@ twinBASIC XLL UDF Addin Example
 
 This is a more useful followup to [my initial proof-of-concept](https://github.com/fafalone/HelloWorldXllTB) for creating an XLL Addin using [twinBASIC](https://github.com/twinbasic/documentation/wiki/twinBASIC-Frequently-Asked-Questions-(FAQs)), which is backwards compatible with the VB6/VBA7 language.
 
+### Usage
+To compile this demo, you need only open the file in twinBASIC, then File->Build. Make sure to build for the same bitness (32bit or 64bit) as your version of Office. twinBASIC has a dropdown in the toolbar that has `win32` and `win64` options. If you don't know which type of Office you have, in Excel, click on File, then Account, then About Excel:
+![image](https://github.com/user-attachments/assets/355ea258-db17-4c02-89e1-0bf27a9b45ff)
+
+This type of addin is loaded on 'Excel Add-ins', not 'Add-ins' or 'COM addins'.
+
+### About
 This demo shows how to create User-Defined Functions (UDFs), Excel functions capable of very high performance because they directly execute native compiled code, which is much faster than VBA P-code. Like the event handlers, UDFs are simply functions exported from our XLL, which is a renamed Standard DLL. twinBASIC supports Standard DLLs natively, and making something an export is as simple as adding `[DllExport]` above the procedure:
 
 ```vba
