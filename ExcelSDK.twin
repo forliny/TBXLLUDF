@@ -1644,7 +1644,7 @@ Public Function GetXLActiveRow12(ByVal rw As Long) As XLOPER12
     Return GetXLActiveRef12(rw, rw, 0, &H00003FFF)
 End Function
 Public Function GetXLActiveColumn12(ByVal col As Long) As XLOPER12
-    Return GetXLActiveRef12(0, &HFFFF&, col, col)
+    Return GetXLActiveRef12(0, &H000FFFFF&, col, col)
 End Function
 Public Function GetXLActiveCell12(ByVal rw As Long, ByVal col As Long) As XLOPER12
     Return GetXLActiveRef12(rw, rw, col, col)

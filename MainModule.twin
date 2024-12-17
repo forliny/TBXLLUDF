@@ -22,6 +22,8 @@ Module MainModule
     'making this friendlier. I'll work on that in future demos of more
     'advanced functionality.
     '
+    ' (17 Dec 2024) Version 1.0.2 - Bug fix for (unused in this project) SDK
+    '       helper functions.
     ' (16 Dec 2024) Version 1.0.1 - Initial release
     '**************************************************************************
        
