@@ -11,7 +11,10 @@ To compile this demo, you need only open the file in twinBASIC, then File->Build
 
 This type of addin is loaded on 'Excel Add-ins', not 'Add-ins' or 'COM addins'.
 
-### About
+>[!NOTE]
+>While the initial proof of concept used Excel 4.0 calls, this project now uses Excel 12.0 calls, so only Excel 2007 and later is supported. It's possible to use the 4.0 calls instead but there's limits like no Unicode and smaller data types (e.g. can't address cells beyond column 255 or row 65535 and need special handling above row 32767); I haven't written helpers for the `XLOPER` types yet either, just the `XLOPER12` types for the newer version.
+
+## About
 This demo shows how to create User-Defined Functions (UDFs), Excel functions capable of very high performance because they directly execute native compiled code, which is much faster than VBA P-code. Like the event handlers, UDFs are simply functions exported from our XLL, which is a renamed Standard DLL. twinBASIC supports Standard DLLs natively, and making something an export is as simple as adding `[DllExport]` above the procedure:
 
 ```vba
