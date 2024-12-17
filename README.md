@@ -1,4 +1,4 @@
-# TBXLLUDF v1.0.1
+# TBXLLUDF v1.0.2
 twinBASIC XLL UDF Addin Example
 
 ![image](https://github.com/user-attachments/assets/b842901d-528a-4701-a467-8b1aad1a6df7)
