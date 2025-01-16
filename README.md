@@ -1,9 +1,21 @@
-# TBXLLUDF v1.0.2
-twinBASIC XLL UDF Addin Example
+# TBXLLUDF v2.0.6
+twinBASIC XLL UDF Addin Example v2.0.6
 
 ![image](https://github.com/user-attachments/assets/b842901d-528a-4701-a467-8b1aad1a6df7)
 
 This is a more useful followup to [my initial proof-of-concept](https://github.com/fafalone/HelloWorldXllTB) for creating an XLL Addin using [twinBASIC](https://github.com/twinbasic/documentation/wiki/twinBASIC-Frequently-Asked-Questions-(FAQs)), which is backwards compatible with the VB6/VBA7 language.
+
+### Updates
+```
+    ' (16 Jan 2025) Version 2.0.6 
+    '   - Bug fixes and additions from GCUser99,
+    '       see https://github.com/fafalone/TBXLLUDF/issues/4
+    '   - Fixed GetXLString12 to not have 255 char limit
+    '   - Fixed Xloper12StrValue
+    ' (17 Dec 2024) Version 1.0.2 - Bug fix for (unused in this project) SDK
+    '       helper functions.
+    ' (16 Dec 2024) Version 1.0.1 - Initial release
+```
 
 ### Usage
 To compile this demo, you need only open the file in twinBASIC, then File->Build. Make sure to build for the same bitness (32bit or 64bit) as your version of Office. twinBASIC has a dropdown in the toolbar that has `win32` and `win64` options. If you don't know which type of Office you have, in Excel, click on File, then Account, then About Excel:\
