@@ -2,7 +2,7 @@
 Module MainModule
     
     '**************************************************************************
-    'twinBASIC XLL UDF Demo v1.0.1
+    'twinBASIC XLL UDF Demo v2.0.6
     'by Jon Johnson
     'https://github.com/fafalone/TBXLLUDF
     'Based on the Generic example from the Excel SDK
@@ -22,6 +22,11 @@ Module MainModule
     'making this friendlier. I'll work on that in future demos of more
     'advanced functionality.
     '
+    ' (16 Jan 2025) Version 2.0.6 
+    '   - Bug fixes and additions from GCUser99,
+    '       see https://github.com/fafalone/TBXLLUDF/issues/4
+    '   - Fixed GetXLString12 to not have 255 char limit
+    '   - Fixed Xloper12StrValue
     ' (17 Dec 2024) Version 1.0.2 - Bug fix for (unused in this project) SDK
     '       helper functions.
     ' (16 Dec 2024) Version 1.0.1 - Initial release
@@ -34,19 +39,18 @@ Module MainModule
 
     Private Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As LongPtr)
 
- 
     'Strings to register our functions:
     Private Const FuncName0 As String = "TBXLLUDFNumberName" 'Procedure
     Private Const FuncName1 As String = "UU" 'type_text
     Private Const FuncName2 As String = "TBXLLUDFNumberName" 'function_text
     Private Const FuncName3 As String = "Number to name" 'argument_text
-    Private Const FuncName4 As String = "1" 'macro_type
+    Private Const FuncName4 As String = "1" 'macro_type: https://learn.microsoft.com/en-us/office/client-developer/excel/xlfregister-form-1
     Private Const FuncName5 As String = "tB XLL UDF Add-In" 'category
     Private Const FuncName6 As String = "" 'shortcut_text
     Private Const FuncName7 As String = "" 'help_topic
     Private Const FuncName8 As String = "Returns the text name of a number, e.g. 1 to One" 'function_help
     Private Const FuncName9 As String = "The number to name" 'argument_help1
-    
+
     Private Const FuncRoman0 As String = "TBXLLUDFRomanNumeral" 'Procedure
     Private Const FuncRoman1 As String = "UU" 'type_text
     Private Const FuncRoman2 As String = "TBXLLUDFRomanNumeral" 'function_text
@@ -57,26 +61,45 @@ Module MainModule
     Private Const FuncRoman7 As String = "" 'help_topic
     Private Const FuncRoman8 As String = "Returns the Roman numeral of a number, e.g. 9 to IX" 'function_help
     Private Const FuncRoman9 As String = "The number to convert" 'argument_help1
-    
- 
+
+    Private Const FuncMult0 As String = "TBXLLUDFMultiply" 'Procedure
+    Private Const FuncMult1 As String = "UUU" 'type_text
+    Private Const FuncMult2 As String = "TBXLLUDFMultiply" 'function_text
+    Private Const FuncMult3 As String = "Number1,Number2" 'argument_text - multi arguments comma separated
+    Private Const FuncMult4 As String = "1" 'macro_type
+    Private Const FuncMult5 As String = "tB XLL UDF Add-In" 'category
+    Private Const FuncMult6 As String = "" 'shortcut_text
+    Private Const FuncMult7 As String = "" 'help_topic
+    Private Const FuncMult8 As String = "Returns the product of two numbers" 'function_help
+    Private Const FuncMult9 As String = "First operand for the multiplication" 'argument_help1
+    Private Const FuncMult10 As String = "Second operand for the multiplication" 'argument_help2
+
+    Private Const FuncString0 As String = "TBXLLUDFString" 'Procedure
+    Private Const FuncString1 As String = "UU" 'type_text
+    Private Const FuncString2 As String = "TBXLLUDFString" 'function_text
+    Private Const FuncString3 As String = "String to test" 'argument_text
+    Private Const FuncString4 As String = "1" 'macro_type
+    Private Const FuncString5 As String = "tB XLL UDF Add-In" 'category
+    Private Const FuncString6 As String = "" 'shortcut_text
+    Private Const FuncString7 As String = "" 'help_topic
+    Private Const FuncString8 As String = "Returns the the input string" 'function_help
+    Private Const FuncString9 As String = "The string to return" 'argument_help1
+
     [DllExport]
     Public Function xlAutoOpen() As Integer
-
         Dim oper(1) As XLOPER12
- 
-        oper(0) = GetXLString12("Welcome to the tB XLL UDF Demo!")
+
+        oper(0) = GetXLString12("Welcome to the tB XLL UDF Demo v2.0!")
         oper(1) = GetXLInt12(2)
 
         Excel12v(xlcAlert, vbNullPtr, 2, oper)
-        
-        
+    
         Dim xDLL(0) As XLOPER12
         Dim dummy(0) As XLOPER12
-        
+    
         Excel12v(xlGetName, xDLL(0), 0, dummy)
-        
-        
-        Dim func1def(10) As XLOPER12
+    
+        Dim func1def(11) As XLOPER12
         func1def(0) = xDLL(0)
         func1def(1) = GetXLString12(FuncName0)
         func1def(2) = GetXLString12(FuncName1)
@@ -88,10 +111,14 @@ Module MainModule
         func1def(8) = GetXLString12(FuncName7)
         func1def(9) = GetXLString12(FuncName8)
         func1def(10) = GetXLString12(FuncName9)
-        
-        Excel12v(xlfRegister, vbNullPtr, 11, func1def)
-        
-        Dim func2def(10) As XLOPER12
+    
+        'Add dummy string to solve arg help truncation issue
+        'https://learn.microsoft.com/en-us/office/client-developer/excel/known-issues-in-excel-xll-development#argument-description-string-truncation-in-the-function-wizard
+    
+        func1def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func1def) + 1, func1def)
+    
+        Dim func2def(11) As XLOPER12
         func2def(0) = xDLL(0)
         func2def(1) = GetXLString12(FuncRoman0)
         func2def(2) = GetXLString12(FuncRoman1)
@@ -103,21 +130,208 @@ Module MainModule
         func2def(8) = GetXLString12(FuncRoman7)
         func2def(9) = GetXLString12(FuncRoman8)
         func2def(10) = GetXLString12(FuncRoman9)
-        
-        Excel12v(xlfRegister, vbNullPtr, 11, func2def)
-                
+    
+        'Add dummy string to solve arg help truncation issue
+        func2def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func2def) + 1, func2def)
+    
+        Dim func3def(12) As XLOPER12
+        func3def(0) = xDLL(0)
+        func3def(1) = GetXLString12(FuncMult0)
+        func3def(2) = GetXLString12(FuncMult1)
+        func3def(3) = GetXLString12(FuncMult2)
+        func3def(4) = GetXLString12(FuncMult3)
+        func3def(5) = GetXLString12(FuncMult4)
+        func3def(6) = GetXLString12(FuncMult5)
+        func3def(7) = GetXLString12(FuncMult6)
+        func3def(8) = GetXLString12(FuncMult7)
+        func3def(9) = GetXLString12(FuncMult8)
+        func3def(10) = GetXLString12(FuncMult9)
+        func3def(11) = GetXLString12(FuncMult10)
+    
+        'Add dummy string to solve arg help truncation issue
+        func3def(12) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func3def) + 1, func3def)
+    
+        Dim func4def(11) As XLOPER12
+        func4def(0) = xDLL(0)
+        func4def(1) = GetXLString12(FuncString0)
+        func4def(2) = GetXLString12(FuncString1)
+        func4def(3) = GetXLString12(FuncString2)
+        func4def(4) = GetXLString12(FuncString3)
+        func4def(5) = GetXLString12(FuncString4)
+        func4def(6) = GetXLString12(FuncString5)
+        func4def(7) = GetXLString12(FuncString6)
+        func4def(8) = GetXLString12(FuncString7)
+        func4def(9) = GetXLString12(FuncString8)
+        func4def(10) = GetXLString12(FuncString9)
+    
+        'Add dummy string to solve arg help truncation issue
+        func4def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func4def) + 1, func4def)
+            
         Excel12v(xlFree, vbNullPtr, 1, xDLL)
         Return 1
     End Function
-    
+
     [DllExport]
     Public Function xlAutoClose() As Long
         Dim operFunc1(0) As XLOPER12
         operFunc1(0) = GetXLString12(FuncName1)
         Excel12v(xlfSetName, vbNullPtr, 1, operFunc1)
+    
         Dim operFunc2(0) As XLOPER12
         operFunc2(0) = GetXLString12(FuncName2)
         Excel12v(xlfSetName, vbNullPtr, 1, operFunc2)
+    
+        Dim operFunc3(0) As XLOPER12
+        operFunc3(0) = GetXLString12(FuncName3)
+        Excel12v(xlfSetName, vbNullPtr, 1, operFunc3)
+    
+        Dim operFunc4(0) As XLOPER12
+        operFunc4(0) = GetXLString12(FuncName4)
+        Excel12v(xlfSetName, vbNullPtr, 1, operFunc4)
+    
+        Return 1
+    End Function
+    
+    [DllExport]
+    Public Function xlAutoRemove() As Long
+        'Notes:
+        'See https://learn.microsoft.com/en-us/office/client-developer/excel/known-issues-in-excel-xll-development#unregistering-xll-commands-and-functions
+        'See https://stackoverflow.com/questions/15343282/how-to-remove-an-excel-udf-programmatically
+        'See https://learn.microsoft.com/en-us/office/client-developer/excel/xlfregister-form-1
+        'See @GromRGB on tB Discord for link to old Excel developer's book
+        'From links above, there is a bug in Excel where unregistered UDF's are not removed from Function Wizard
+        'The workaround appears to be unregister UDF, re-register UDF as hidden (macro_type = 2), then unregister hidden UDF
+        '@GromRGB's link implies unregistering b4 re-registering as hidden is not necessary but stackoverflow link does unregister b4 re-registering
+    
+        'First unregister the UDF's
+        'Unregister code provided by fafalone:
+        Dim xOpers(1) As XLOPER12 'xDll, xFunc
+        Dim xRegId(0) As XLOPER12
+    
+        Excel12v(xlGetName, xOpers(0), 0)
+    
+        xOpers(1) = GetXLString12(FuncName0)
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncRoman0)
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncMult0)
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncString0)
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+    
+        'Now re-register udf's as hidden (macro_type=2)
+        Dim xDLL(0) As XLOPER12
+        Dim dummy(0) As XLOPER12
+    
+        Excel12v(xlGetName, xDLL(0), 0, dummy)
+    
+        Dim func1def(11) As XLOPER12
+        func1def(0) = xDLL(0)
+        func1def(1) = GetXLString12(FuncName0)
+        func1def(2) = GetXLString12(FuncName1)
+        func1def(3) = GetXLString12(FuncName2)
+        func1def(4) = GetXLString12(FuncName3)
+        func1def(5) = GetXLString12("2")                  '<- hidden
+        func1def(6) = GetXLString12(FuncName5)
+        func1def(7) = GetXLString12(FuncName6)
+        func1def(8) = GetXLString12(FuncName7)
+        func1def(9) = GetXLString12(FuncName8)
+        func1def(10) = GetXLString12(FuncName9)
+        func1def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func1def) + 1, func1def)
+    
+        Dim func2def(11) As XLOPER12
+        func2def(0) = xDLL(0)
+        func2def(1) = GetXLString12(FuncRoman0)
+        func2def(2) = GetXLString12(FuncRoman1)
+        func2def(3) = GetXLString12(FuncRoman2)
+        func2def(4) = GetXLString12(FuncRoman3)
+        func2def(5) = GetXLString12("2")                  '<- hidden
+        func2def(6) = GetXLString12(FuncRoman5)
+        func2def(7) = GetXLString12(FuncRoman6)
+        func2def(8) = GetXLString12(FuncRoman7)
+        func2def(9) = GetXLString12(FuncRoman8)
+        func2def(10) = GetXLString12(FuncRoman9)
+        func2def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func2def) + 1, func2def)
+    
+        Dim func3def(12) As XLOPER12
+        func3def(0) = xDLL(0)
+        func3def(1) = GetXLString12(FuncMult0)
+        func3def(2) = GetXLString12(FuncMult1)
+        func3def(3) = GetXLString12(FuncMult2)
+        func3def(4) = GetXLString12(FuncMult3)
+        func3def(5) = GetXLString12("2")                  '<- hidden
+        func3def(6) = GetXLString12(FuncMult5)
+        func3def(7) = GetXLString12(FuncMult6)
+        func3def(8) = GetXLString12(FuncMult7)
+        func3def(9) = GetXLString12(FuncMult8)
+        func3def(10) = GetXLString12(FuncMult9)
+        func3def(11) = GetXLString12(FuncMult10)
+        func3def(12) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func3def) + 1, func3def)
+    
+        Dim func4def(11) As XLOPER12
+        func4def(0) = xDLL(0)
+        func4def(1) = GetXLString12(FuncString0)
+        func4def(2) = GetXLString12(FuncString1)
+        func4def(3) = GetXLString12(FuncString2)
+        func4def(4) = GetXLString12(FuncString3)
+        func4def(5) = GetXLString12("2")
+        func4def(6) = GetXLString12(FuncString5)
+        func4def(7) = GetXLString12(FuncString6)
+        func4def(8) = GetXLString12(FuncString7)
+        func4def(9) = GetXLString12(FuncString8)
+        func4def(10) = GetXLString12(FuncString9)
+        func4def(11) = GetXLString12(vbNullString)
+        Excel12v(xlfRegister, vbNullPtr, UBound(func4def) + 1, func4def)
+    
+        'Unregister the new hidden functions...
+    
+        Excel12v(xlGetName, xOpers(0), 0)
+    
+        xOpers(1) = GetXLString12(FuncName0)
+    
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncRoman0)
+    
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncMult0)
+    
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        xOpers(1) = GetXLString12(FuncString0)
+    
+        Excel12v(xlfRegisterId, xRegId(0), 2, xOpers)
+        Excel12v(xlfUnregister, vbNullPtr, 1, xRegId)
+    
+        'send alert and clean up
+    
+        xOpers(0) = GetXLString12("Bye bye to the tB XLL UDF Demo!")
+        xOpers(1) = GetXLInt12(2)
+
+        Excel12v(xlcAlert, vbNullPtr, 2, xOpers)
+    
+        Excel12v(xlFree, vbNullPtr, 1, xOpers)
+        Excel12v(xlFree, vbNullPtr, 1, xRegId)
+        Excel12v(xlFree, vbNullPtr, 1, xDLL)
+    
         Return 1
     End Function
     
@@ -129,26 +343,25 @@ Module MainModule
         xTmp(0) = xAction
         xTmp(1) = GetXLInt12(xltypeInt)
         Excel12v(xlCoerce, xIntAction(0), 2, xTmp)
-        
+    
         Dim w As Long
         CopyMemory w, xIntAction(0).val(0), LenB(w)
         If w = 1 Then
-            xInfo(0) = GetXLString12("tB XLL Add-in")
+            xInfo(0) = GetXLString12("tB XLL Add-in v2.0")
         Else
             xInfo(0).xltype = xltypeErr
             CopyMemory xInfo(0).val(0), xlerrValue, LenB(Of Long)
         End If
-        
+    
         Return VarPtr(xInfo(0))
     End Function
-    
- 
+
     'Define our UDFs:
     [DllExport]
     Public Function TBXLLUDFNumberName(pIn As XLOPER12) As LongPtr 'LPXLOPER12
         Dim num As String
-        Dim lnum As Long
         Dim dblnum As Double
+        Dim lnum As Long
         Dim xlt(0) As XLOPER12
         Dim error As XloperErrorCodes = -1
         Dim xle() As XLOPER12
@@ -157,36 +370,44 @@ Module MainModule
         Select Case pIn.xltype
             Case xltypeNum
                 dblnum = Xloper12NumValue(pIn)
-                If dblnum <= MAXLONGLONG Then
+                If dblnum >= 0 And dblnum <= MAXLONGLONG Then
                     num = CStr(CLngLng(dblnum))
+                Else
+                    error = xlerrValue
                 End If
             Case xltypeInt
+                'not sure under what circumstance an int type will be passed
                 lnum = Xloper12IntValue(pIn)
                 num = CStr(lnum)
-            Case xltypeSRef
+            Case xltypeSRef, xltypeStr
+                'Excel will attempt to coerce a string to a number for us here
                 xle(0) = pIn
-                xle(1) = GetXLInt12(xltypeInt)
+                xle(1) = GetXLInt12(xltypeNum)
                 error = Excel12v(xlCoerce, xlt(0), 2, xle)
                 If error = 0 Then
                     error = -1
-                    lnum = Xloper12IntValue(xlt(0))
-                    num = CStr(lnum)
+                    dblnum = Xloper12NumValue(xlt(0))
+                    If dblnum >= 0 And dblnum <= MAXLONGLONG Then
+                        num = CStr(CLngLng(dblnum))
+                    Else
+                        error = xlerrValue
+                    End If
                 End If
                 Excel12v(xlFree, vbNullPtr, 1, xlt)
             Case Else
                 error = xlerrValue
         End Select
-        
-        If (error <> -1) Or (num <= 0) Then
+    
+        If error <> -1 Then
             xResult.xltype = xltypeErr
             CopyMemory xResult.val(0), error, LenB(error)
             Return VarPtr(xResult)
         End If
-        
+    
         xResult = GetXLString12(ConvertNumberToText(num))
         Return VarPtr(xResult)
     End Function
-    
+
     [DllExport]
     Public Function TBXLLUDFRomanNumeral(pIn As XLOPER12) As LongPtr 'LPXLOPER12
         Dim num As Long
@@ -199,31 +420,122 @@ Module MainModule
         Select Case pIn.xltype
             Case xltypeNum
                 dblnum = Xloper12NumValue(pIn)
-                If dblnum < MAXLONG Then
-                    num = CStr(CLng(dblnum))
+                If dblnum >= 0 And dblnum < MAXLONG Then
+                    num = CLng(dblnum)
+                Else
+                    error = xlerrValue
                 End If
             Case xltypeInt
+                'not sure under what circumstance an int type will be passed
                 num = Xloper12IntValue(pIn)
-            Case xltypeSRef
+            Case xltypeSRef, xltypeStr
                 xle(0) = pIn
-                xle(1) = GetXLInt12(xltypeInt)
+                xle(1) = GetXLInt12(xltypeNum)
                 error = Excel12v(xlCoerce, xlt(0), 2, xle)
                 If error = 0 Then
                     error = -1
-                    CopyMemory num, xlt(0).val(0), LenB(Of Long)
+                    dblnum = Xloper12NumValue(xlt(0))
+                    If dblnum >= 0 And dblnum < MAXLONG Then
+                        num = CLng(dblnum)
+                    Else
+                        error = xlerrValue
+                    End If
                 End If
                 Excel12v(xlFree, vbNullPtr, 1, xlt)
             Case Else
                 error = xlerrValue
         End Select
-        
-        If (error <> -1) Or (num <= 0) Then
+    
+        If error <> -1 Then
             xResult.xltype = xltypeErr
             CopyMemory xResult.val(0), error, LenB(error)
             Return VarPtr(xResult)
         End If
-        
+    
         xResult = GetXLString12(num_getroman(num))
+        Return VarPtr(xResult)
+    End Function
+    
+    [DllExport]
+    Public Function TBXLLUDFMultiply(pIn1 As XLOPER12, pIn2 As XLOPER12) As LongPtr 'LPXLOPER12
+        Dim num1 As Double
+        Dim num2 As Double
+        Dim xlt(0) As XLOPER12
+        Dim error As XloperErrorCodes = -1
+        Dim xle() As XLOPER12
+        Static xResult As XLOPER12
+        ReDim xle(1)
+        Select Case pIn1.xltype
+            Case xltypeNum
+                num1 = Xloper12NumValue(pIn1)
+            Case xltypeSRef, xltypeStr
+                xle(0) = pIn1
+                xle(1) = GetXLInt12(xltypeNum)
+                error = Excel12v(xlCoerce, xlt(0), 2, xle)
+                If error = 0 Then
+                    error = -1
+                    num1 = Xloper12NumValue(xlt(0))
+                End If
+                Excel12v(xlFree, vbNullPtr, 1, xlt)
+            Case Else
+                error = xlerrValue
+        End Select
+    
+        If error <> -1 Then
+            xResult.xltype = xltypeErr
+            CopyMemory xResult.val(0), error, LenB(error)
+            Return VarPtr(xResult)
+        End If
+    
+        Select Case pIn2.xltype
+            Case xltypeNum
+                num2 = Xloper12NumValue(pIn2)
+            Case xltypeSRef, xltypeStr
+                xle(0) = pIn2
+                xle(1) = GetXLInt12(xltypeNum)
+                error = Excel12v(xlCoerce, xlt(0), 2, xle)
+                If error = 0 Then
+                    error = -1
+                    num2 = Xloper12NumValue(xlt(0))
+                End If
+                Excel12v(xlFree, vbNullPtr, 1, xlt)
+            Case Else
+                error = xlerrValue
+        End Select
+    
+        If error <> -1 Then
+            xResult.xltype = xltypeErr
+            CopyMemory xResult.val(0), error, LenB(error)
+            Return VarPtr(xResult)
+        End If
+    
+        xResult = GetXLNum12(num_multiply(num1, num2))
+        Return VarPtr(xResult)
+    End Function
+
+    'this one simply takes a string as input and tries to output to sheet - does not work yet.
+    [DllExport]
+    Public Function TBXLLUDFString(pIn As XLOPER12) As LongPtr 'LPXLOPER12
+        Dim num As String
+        Dim xlt(0) As XLOPER12
+        Dim error As XloperErrorCodes = -1
+        Dim xle() As XLOPER12
+        Static xResult As XLOPER12
+        ReDim xle(1)
+        Select Case pIn.xltype
+            Case xltypeStr
+                num = Xloper12StrValue(pIn)
+            Case Else
+                error = xlerrValue
+        End Select
+    
+        If error <> -1 Then
+            xResult.xltype = xltypeErr
+            CopyMemory xResult.val(0), error, LenB(error)
+            Return VarPtr(xResult)
+        End If
+    
+        xResult = GetXLString12(num)
         Return VarPtr(xResult)
     End Function
     

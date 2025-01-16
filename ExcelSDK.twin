@@ -1453,28 +1453,197 @@ End Sub
     ' return(mdRet);
     
 ' }
-[Unimplemented]
-[Description("TEMPORARY - tB cannot currently put UDTs in Variants so no ParamArray.\" & vbCrLf & "Use Excel12v instead.")]
-Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, ParamArray opers() As Variant) As Excel4ReturnCodes
-    ' Dim rgxloper12() As XLOPER12
+' [Unimplemented]
+' [Description("TEMPORARY - tB cannot currently put UDTs in Variants so no ParamArray.\" & vbCrLf & "Use Excel12v instead.")]
+' Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, ParamArray opers() As Variant) As Excel4ReturnCodes
+'     ' Dim rgxloper12() As XLOPER12
+'     Dim mdRet As Excel4ReturnCodes
+'     ' FetchExcel12EntryPt()
+'     ' If (pexcel12 = 0) Then
+'         mdRet = xlretFailed
+'     ' Else
+'     '     mdRet = xlretInvCount
+'     '     If ((count >= 0) And (count <= cxloper12Max)) Then
+'     '         ReDim rgxloper12(count - 1)
+'     '         Dim ioper As Long
+'     '         For ioper = 0 To UBound(opers)
+'     '             rgxloper12(ioper) = opers(ioper)
+'     '             mdRet = (pexcel12)(xlfn, count, VarPtr(rgxloper12(0)), operRes)
+'     '         Next
+'     '     End If
+'     ' End If
+'     Return mdRet
+' End Function
+
+'TEMP WORKAROUND:: Can't put UDTs in Variants but can create overloads for most scenarios
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long) As Excel4ReturnCodes
     Dim mdRet As Excel4ReturnCodes
-    ' FetchExcel12EntryPt()
-    ' If (pexcel12 = 0) Then
+    FetchExcel12EntryPt()
+    If (pexcel12 = 0) Then
         mdRet = xlretFailed
-    ' Else
-    '     mdRet = xlretInvCount
-    '     If ((count >= 0) And (count <= cxloper12Max)) Then
-    '         ReDim rgxloper12(count - 1)
-    '         Dim ioper As Long
-    '         For ioper = 0 To UBound(opers)
-    '             rgxloper12(ioper) = opers(ioper)
-    '             mdRet = (pexcel12)(xlfn, count, VarPtr(rgxloper12(0)), operRes)
-    '         Next
-    '     End If
-    ' End If
+    ElseIf count = 0 Then
+        mdRet = pexcel12(xlfn, count, ByVal 0, operRes)
+    Else
+        mdRet = xlretFailed
+    End If
     Return mdRet
 End Function
-    
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12) As Long
+    If count <> 1 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12) As Long
+    If count <> 2 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12) As Long
+    If count <> 3 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12) As Long
+    If count <> 4 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12) As Long
+    If count <> 5 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12) As Long
+    If count <> 6 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12) As Long
+    If count <> 7 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12) As Long
+    If count <> 8 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12, oper8 As XLOPER12) As Long
+    If count <> 9 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    xOper(8) = oper8
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12, oper8 As XLOPER12, oper9 As XLOPER12) As Long
+    If count <> 10 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    xOper(8) = oper8
+    xOper(9) = oper9
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12, oper8 As XLOPER12, oper9 As XLOPER12, oper10 As XLOPER12) As Long
+    If count <> 11 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    xOper(8) = oper8
+    xOper(9) = oper9
+    xOper(10) = oper10
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12, oper8 As XLOPER12, oper9 As XLOPER12, oper10 As XLOPER12, oper11 As XLOPER12) As Long
+    If count <> 12 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    xOper(8) = oper8
+    xOper(9) = oper9
+    xOper(10) = oper10
+    xOper(11) = oper11
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
+Public Function Excel12(ByVal xlfn As ExcelCommandNumbers, operRes As XLOPER12, ByVal count As Long, oper0 As XLOPER12, oper1 As XLOPER12, oper2 As XLOPER12, oper3 As XLOPER12, oper4 As XLOPER12, oper5 As XLOPER12, oper6 As XLOPER12, oper7 As XLOPER12, oper8 As XLOPER12, oper9 As XLOPER12, oper10 As XLOPER12, oper11 As XLOPER12, oper12 As XLOPER12) As Long
+    If count <> 13 Then Return xlretFailed
+    Dim xOper(0) As XLOPER12
+    xOper(0) = oper0
+    xOper(1) = oper1
+    xOper(2) = oper2
+    xOper(3) = oper3
+    xOper(4) = oper4
+    xOper(5) = oper5
+    xOper(6) = oper6
+    xOper(7) = oper7
+    xOper(8) = oper8
+    xOper(9) = oper9
+    xOper(10) = oper10
+    xOper(11) = oper11
+    xOper(12) = oper12
+    Return Excel12v(xlfn, operRes, count, xOper)
+End Function
 ' int pascal Excel12v(int xlfn, LPXLOPER12 operRes, int count, LPXLOPER12 opers[])
 ' {
 
@@ -1596,7 +1765,7 @@ Public Function GetXLString12(text As String) As XLOPER12
     Dim pStr As LongPtr = GlobalAlloc(GPTR, (text_len + 1) * 2) 'Excel frees it, that's why this trouble
     ZeroMemory ByVal pStr, (text_len + 1) * 2
     CopyMemory ByVal VarPtr(GetXLString12.val(0)), pStr, LenB(pStr)
-    CopyMemory ByVal pStr, CByte(text_len), 1
+    CopyMemory ByVal pStr, CInt(text_len), 2
     CopyMemory ByVal pStr + 2, ByVal StrPtr(text), (text_len) * 2
 End Function
 Public Function GetXLInt12(n As Long) As XLOPER12
@@ -1670,11 +1839,14 @@ Public Function Xloper12BoolValue(x As XLOPER12) As Boolean
 End Function
 Public Function Xloper12StrValue(x As XLOPER12) As String
     If x.xltype <> xltypeStr Then Exit Function
+    Dim cch As Integer
     Dim lp As LongPtr
     CopyMemory lp, x.val(0), LenB(Of LongPtr)
-    If lp Then
-        SysReAllocStringW VarPtr(Xloper12StrValue), lp
-    End If
+    CopyMemory cch, ByVal lp, 2
+    ' MsgBox "Got cch=" & cch
+    Dim sTmp As String = String$(cch, 0)
+    CopyMemory ByVal StrPtr(sTmp), ByVal lp + 2, cch * 2
+    Return sTmp
 End Function
 
 End Module

@@ -1,5 +1,9 @@
 Module modFuncs
 
+    Public Function num_multiply(ByVal number1 As Double, ByVal number2 As Double) As Double
+        num_multiply = number1 * number2
+    End Function
+    
     Public Function ConvertNumberToText(ByVal aNumber As String) As String
     'handles numbers natively from zero all the way through (1000 milliatillion - 1), aka 10^3003
     'larger numbers are accepted, but are named in the highest available unit
