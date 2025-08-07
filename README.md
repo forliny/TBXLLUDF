@@ -112,3 +112,7 @@ The most important is the name of the procedure, and the type_type which describ
 ```
 
 Well that covers all the basics for now, dig into the source for all the details. ExcelSDK.twin is portable and meant to be reused in new XLL projects, I'll probably turn it into a package when there's more wrappers to simplify things.
+
+
+  '2025.8.7 基于fafalone TBXLLUDF的代码和fbxll代码，通过  UDFDefinition '函数定义  和  UDFAction '自定义函数实现 
+    '         CommonMod 模块 RegUdf UnRegUdf DelUDFName 批量添加删除自定义函数,使用起来会方便很多
